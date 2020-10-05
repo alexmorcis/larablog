@@ -1,4 +1,8 @@
-<form action="" method="POST">
+<link rel="stylesheet" href="{{ asset("css/>app.css") }}">
+<script src="{{ asset("js/>app.js") }}"></script>
+
+<form action="{{ route("post.store") }}" method="POST">
+    @csrf
     <div class="form-group">
         <label for="title">Título</label>
         <input  class= "form-control" type="text" name="title" id="title" >
@@ -11,4 +15,5 @@
         <label for="content">Contenido</label>
         <textarea class= "form-control" name="content" id="content"  rows="3"></textarea>
     </div>
+    <input type="submit" value="Enviar" class="btn btn-primary">
 </form>
