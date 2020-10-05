@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="{{ asset("css/>app.css") }}">
-<script src="{{ asset("js/>app.js") }}"></script>
-
+@extends('dashboard.master')
+@section('content')
+<div class="container">
 <form action="{{ route("post.store") }}" method="POST">
     @csrf
     <div class="form-group">
@@ -17,3 +17,5 @@
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
 </form>
+</div>
+@endsection
