@@ -1,0 +1,134 @@
+<?php
+	session_start(); //Se abre la sesión o se crea una nueva.
+	$id_de_empresa = $_SESSION["id_de_empresa_activa"];
+		header('Content-Type: text/html; charset=utf-8');
+		ini_set('memory_limit', '1024M');
+		ini_set('display_errors', 1);
+		header("Pragma: no-cache");
+		header("Expires: 0");
+		include ("../../../includes/config.php");
+		include_once ("../../../includes/funciones_auxiliares.php");
+		include ('../../../includes/cab_excel.php');
+
+		$matriz_de_empresas = $_POST['matriz_de_empresas'];
+		$lista_de_empresas = implode(',', $matriz_de_empresas);
+
+		$matrizDeTipologias = [];
+		$consulta = "SELECT ";
+		$consulta .= "id_de_tipo, ";
+		$consulta .= "nombre_de_tipo ";
+		$consulta .= "FROM ";
+		$consulta .= "maestro_de_tipologias_de_empresas ";
+		$consulta .= "WHERE titular_gestor = ?;";
+		$hacerConsulta = $conexionPDO->prepare($consulta);
+		$hacerConsulta->bindParam(1, $id_de_empresa);
+		$hacerConsulta->execute();
+		while ($item = $hacerConsulta->fetch(PDO::FETCH_ASSOC)) {
+			if ($item['nombre_de_tipo'] == '') continue;
+			$matrizDeTipologias[$item['id_de_tipo']] = $item['nombre_de_tipo'];
+		}
+		$hacerConsulta->closeCursor();
+
+		$consulta = "SELECT ";
+		$consulta .= "maestro_de_empresas.id_de_empresa, ";
+		$consulta .= "maestro_de_empresas.nombre_de_empresa, ";
+		$consulta .= "maestro_de_empresas.sigue_vigente, ";
+		$consulta .= "maestro_de_trabajadores.id_de_trabajador, ";
+		$consulta .= "maestro_de_trabajadores.nombre_completo_del_trabajador, ";
+		$consulta .= "maestro_de_trabajadores.dni_nif_nie_del_trabajador ";
+		$consulta .= "FROM ";
+		$consulta .= "maestro_de_trabajadores, ";
+		$consulta .= "maestro_de_empresas ";
+		$consulta .= "WHERE ";
+		$consulta .= "maestro_de_trabajadores.id_de_empresa IN (".$lista_de_empresas.") ";
+		$consulta .= "AND maestro_de_trabajadores.sigue_vigente = ? ";
+		$consulta .= "AND maestro_de_empresas.id_de_empresa = maestro_de_trabajadores.id_de_empresa;";
+		$hacerConsulta = $conexionPDO->prepare($consulta);
+		$hacerConsulta->bindValue(1, 'S');
+		$hacerConsulta->execute();
+		$trabajadoresObtenidos = $hacerConsulta->fetchAll(PDO::FETCH_ASSOC);
+		$hacerConsulta->closeCursor();
+
+		foreach ($trabajadoresObtenidos as $keyTrab => $trab) {
+			$evaluacion = evaluarTrabajador($id_de_empresa, $trab['id_de_trabajador'], false, '0', true);
+			$trabajadoresObtenidos[$keyTrab]['estado'] = ($evaluacion['trabajadorApto'] === true) ? "APTO": "INAPTO";
+			$trabajadoresObtenidos[$keyTrab]['documentos'] = $evaluacion['requerimientosNoAtendidos'];
+		}
+
+		foreach ($trabajadoresObtenidos as $keyTrab => $trab) {
+			$consulta = "SELECT ";
+			$consulta .= "id_de_tipo ";
+			$consulta .= "FROM ";
+			$consulta .= "maestro_de_relaciones_empresas_tipologias ";
+			$consulta .= "WHERE ";
+			$consulta .= "id_de_empresa = ?;";
+			$hacerConsulta = $conexionPDO->prepare($consulta);
+			$hacerConsulta->bindParam(1, $trab['id_de_empresa']);
+			$hacerConsulta->execute();
+			if ($hacerConsulta->rowCount() == 0) {
+				$id_de_tipo = '0';
+				$nombre_de_tipo_de_empresa = "SIN TIPOLOGIA ESTABLECIDA";
+			} else {
+				$id_de_tipo = $hacerConsulta->fetch(PDO::FETCH_ASSOC)["id_de_tipo"];
+				$nombre_de_tipo_de_empresa = $matrizDeTipologias[$id_de_tipo];
+			}
+			$trabajadoresObtenidos[$keyTrab]['id_de_tipo_de_empresa'] = $id_de_tipo;
+			$trabajadoresObtenidos[$keyTrab]['nombre_de_tipo_de_empresa'] = $nombre_de_tipo_de_empresa;
+			$hacerConsulta->closeCursor();
+		}
+
+		$tablaDeResultados = "";
+		$tablaDeResultados .= "<table border='1'>";
+		$tablaDeResultados .= "<tr>";
+		$tablaDeResultados .= "<th>EMPRESA</th>";
+		$tablaDeResultados .= "<th>TIPOLOGIA</th>";
+		$tablaDeResultados .= "<th>TRABAJADOR</th>";
+		$tablaDeResultados .= "<th>DNI</th>";
+		$tablaDeResultados .= "<th>ESTADO</th>";
+		$tablaDeResultados .= "<th>DOCUMENTO</th>";
+		$tablaDeResultados .= "<th>SOLICITADO EL</th>";
+		$tablaDeResultados .= "<th>LIMITE DE ENVIO</th>";
+		$tablaDeResultados .= "<th>PERIODICIDAD (MESES)</th>";
+		$tablaDeResultados .= "</tr>";
+		if (count($trabajadoresObtenidos) == 0) {
+			$tablaDeResultados .= "<tr>";
+			$tablaDeResultados .= "<td colspan='9'>";
+			$tablaDeResultados .= "NO HAY RESULTADOS CON LOS CRITERIOS SELECCIONADOS";
+			$tablaDeResultados .= "</td>";
+			$tablaDeResultados .= "</tr>";
+		} else {
+			foreach ($trabajadoresObtenidos as $trab) {
+				if ($trab['estado'] == "INAPTO") {
+					foreach ($trab['documentos'] as $doc) {
+						$tablaDeResultados .= "<tr>";
+						$tablaDeResultados .= "<td>".$trab["nombre_de_empresa"]."</td>";
+						$tablaDeResultados .= "<td>".$trab["nombre_de_tipo_de_empresa"]."</td>";
+						$tablaDeResultados .= "<td>".$trab["nombre_completo_del_trabajador"]."</td>";
+						$tablaDeResultados .= "<td>".$trab["dni_nif_nie_del_trabajador"]."</td>";
+						$tablaDeResultados .= "<td>".$trab["estado"]."</td>";
+						$tablaDeResultados .= "<td>".$doc["nombre_de_categoria"]."</td>";
+						$tablaDeResultados .= "<td>".$doc["fecha_de_solicitud"]."</td>";
+						$tablaDeResultados .= "<td>".$doc["fecha_limite_de_aportacion"]."</td>";
+						if ($doc["periodo_de_vigencia_en_meses"] > '0') {
+							$tablaDeResultados .= "<td>".$doc["periodo_de_vigencia_en_meses"]."</td>";
+						} else {
+							$tablaDeResultados .= "<td>SIN CADUCIDAD</td>";
+						}
+						$tablaDeResultados .= "</tr>";
+					}
+				} else {
+					$tablaDeResultados .= "<tr>";
+					$tablaDeResultados .= "<td>".$trab["nombre_de_empresa"]."</td>";
+					$tablaDeResultados .= "<td>".$trab["nombre_de_tipo_de_empresa"]."</td>";
+					$tablaDeResultados .= "<td>".$trab["nombre_completo_del_trabajador"]."</td>";
+					$tablaDeResultados .= "<td>".$trab["dni_nif_nie_del_trabajador"]."</td>";
+					$tablaDeResultados .= "<td>".$trab["estado"]."</td>";
+					$tablaDeResultados .= "<td colspan = '4'>TRABAJADOR APTO</td>";
+					$tablaDeResultados .= "</tr>";
+				}
+			}
+		}
+		$tablaDeResultados .= "</table>";
+
+		echo $tablaDeResultados;
+?>
