@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 // Route::get('/hola/{nombre?}', function ($nombre="Juan") {
 //     return "hola $nombre  conocenos <a href='".route("nosotros")."'>nosotros</a>";
 // });
