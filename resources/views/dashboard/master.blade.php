@@ -16,7 +16,7 @@
 
       @include('dashboard.partials.session-flash-status')
 
-        MASTER
+        
         @yield('content')
     </div>
 

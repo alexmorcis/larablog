@@ -17,7 +17,12 @@ class PostController extends Controller
      */
     public function index()
     {
-        echo "hola";
+        
+        $posts= Post::orderBy('created_at', 'desc')->paginate(4);
+// select*from posts
+      
+        return view('dashboard.post.index',['posts'=> $posts]);
+
     }
 
     /**
@@ -66,7 +71,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post= Post::find($id);
     }
 
     /**
