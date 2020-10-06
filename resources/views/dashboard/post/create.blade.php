@@ -3,7 +3,7 @@
 <div class="container">
   @include('dashboard.partials.validation-error')
 <form action="{{ route("post.store") }}" method="POST">
-    @csrf
+ @csrf
     <div class="form-group">
         <label for="title">Título</label>
         <input  class= "form-control" type="text" name="title" id="title" >

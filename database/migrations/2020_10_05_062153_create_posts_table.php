@@ -14,9 +14,9 @@ class CreatePostTable extends Migration
      */
     public function up()
     {
-        Schema::create('post', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tittle',500)->nullable();
+            $table->string('title',500)->nullable();
             $table->string('url_clean',500)->nullable();
             $table->text('content')->nullable();
             $table->enum('posted', ['yes', 'not'])->nullable()->default('not');
@@ -32,6 +32,6 @@ class CreatePostTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('post');
+        Schema::dropIfExists('posts');
     }
 }

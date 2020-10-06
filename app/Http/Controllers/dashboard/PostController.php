@@ -38,10 +38,10 @@ class PostController extends Controller
      */
     public function store(StorePostPost $request)
     {
-        // dd($request->validated());
+        //  dd($request->validated());
     
         // echo "Hola".$request->input('title','sin titulo');
-        echo "Hola mundo".$request->conetent;
+        echo "Hola mundo: ".$request->content;
         // $request->validate(
         //     [
         //         'title'=>'required|min:5|max:500',
@@ -53,6 +53,7 @@ class PostController extends Controller
         // echo "Hola".$request->input('title','sin titulo');
 
         Post::create($request->validated());
+        return back()->with('status','Post creado con existo');
 
 
     }

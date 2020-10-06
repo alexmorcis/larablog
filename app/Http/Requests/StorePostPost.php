@@ -25,7 +25,7 @@ class StorePostPost extends FormRequest
     {
         return [
             'title'=>'required|min:5|max:500',
-            // 'url_clean'=>'required|min:5|max:500',
+             'url_clean'=>'required|min:5|max:500',
             'content'=>'required|min:5'
 
         ];
