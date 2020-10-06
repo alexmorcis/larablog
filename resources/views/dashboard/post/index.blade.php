@@ -52,7 +52,7 @@
 
                 </td>
                 <td>
-
+                    <a href="{{ route('post.show') }}" class="btn btn-primary">Ver</a>
                 </td>
                 </tr>
             @endforeach
