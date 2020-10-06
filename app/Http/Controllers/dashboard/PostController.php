@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\dashboard;
 
-use App\Http\Controllers\Controller;
+use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostPost;
+use Illuminate\Auth\Events\Validated;
 
 class PostController extends Controller
 {
@@ -33,19 +36,23 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostPost $request)
     {
+        // dd($request->validated());
+    
         // echo "Hola".$request->input('title','sin titulo');
-        // echo "Hola".$request->tittle;
-        $request->validate(
-            [
-                'title'=>'required|min:5|max:500',
-                // 'url_clean'=>'required|min:5|max:500',
-                'content'=>'required|min:5'
+        echo "Hola mundo".$request->conetent;
+        // $request->validate(
+        //     [
+        //         'title'=>'required|min:5|max:500',
+        //         // 'url_clean'=>'required|min:5|max:500',
+        //         'content'=>'required|min:5'
 
-            ]
-            );
-        echo "Hola".$request->input('title','sin titulo');
+        //     ]
+        //     );
+        // echo "Hola".$request->input('title','sin titulo');
+
+        Post::create($request->validated());
 
 
     }
