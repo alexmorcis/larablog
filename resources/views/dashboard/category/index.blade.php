@@ -1,7 +1,7 @@
 @extends('dashboard.master')
 @section('content')
     <div class="container">
-        <a class='btn btn-success mt-3 mb-3 ' href="{{ route('post.create') }}">
+        <a class='btn btn-success mt-3 mb-3 ' href="{{ route('category.create') }}">
             crear
         </a>
 
@@ -15,9 +15,7 @@
                     <td>
                         Título
                     </td>
-                    <td>
-                        Posteado
-                    </td>
+                    
                     <td>
                         Creación
                     </td>
@@ -33,29 +31,27 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($posts as $post)
+                @foreach ($categories as $category)
                     <td>
-                        {{ $post->id }}
+                        {{ $category->id }}
                     </td>
                     <td>
-                        {{ $post->title }}
+                        {{ $category->title }}
                     </td>
+                   
                     <td>
-                        {{ $post->posted }}
-                    </td>
-                    <td>
-                        {{ $post->created_at }}
+                        {{ $category->created_at }}
                     </td>
 
                     <td>
-                        {{ $post->updated_at }}
+                        {{ $category->updated_at }}
 
                     </td>
                     <td>
-                        <a href="{{ route('post.show', $post->id) }}" class="btn btn-primary">Ver</a>
-                        <a href="{{ route('post.edit', $post->id) }}" class="btn btn-primary">Actualizar</a>
+                        <a href="{{ route('category.show', $category->id) }}" class="btn btn-primary">Ver</a>
+                        <a href="{{ route('category.edit', $category->id) }}" class="btn btn-primary">Actualizar</a>
                   
-                            <button data-toggle="modal" data-target="#deleteModal" data-id="{{ $post->id }}" class="btn btn-danger" >Eliminar</button>
+                            <button data-toggle="modal" data-target="#deleteModal" data-id="{{ $category->id }}" class="btn btn-danger" >Eliminar</button>
                         
                     </td>
                     </tr>
@@ -65,7 +61,7 @@
 
         </table>
 
-        {!! $posts->links() !!}
+        {!! $categories->links() !!}
     
 
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -84,7 +80,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <form  id="formDelete" method="POST" action="{{ route('post.destroy',0) }}" data-action="{{ route('post.destroy',0) }}">
+                        <form  id="formDelete" method="category" action="{{ route('category.destroy',0) }}" data-action="{{ route('category.destroy',0) }}">
                             @method('DELETE')
                             @csrf
                             <button type="submit" class="btn btn-danger">Borrar</button>
@@ -111,7 +107,7 @@
                 
                 var modal = $(this)
 
-                modal.find('.modal-title').text('Vas a borrar el POST: ' + id)
+                modal.find('.modal-title').text('Vas a borrar el category: ' + id)
             })
         }
         </script>
