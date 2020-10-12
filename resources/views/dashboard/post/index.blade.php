@@ -44,6 +44,9 @@
                         {{ $post->title }}
                     </td>
                     <td>
+                        {{ $post->category->title }}
+                    </td>
+                    <td>
                         {{ $post->posted }}
                     </td>
                     <td>
