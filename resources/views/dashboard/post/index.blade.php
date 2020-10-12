@@ -16,6 +16,9 @@
                         Título
                     </td>
                     <td>
+                        Categoría
+                    </td>
+                    <td>
                         Posteado
                     </td>
                     <td>
