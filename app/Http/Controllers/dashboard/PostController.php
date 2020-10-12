@@ -4,6 +4,7 @@ namespace App\Http\Controllers\dashboard;
 
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\PostImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostPost;
@@ -108,7 +109,17 @@ class PostController extends Controller
 
         
     }
+    public function image(Request $request, Post $post)
+    {
+        $request->validate([
+            'image'=>'required|mimes:jpeg,bmp,png|max:10240'//10Mb
+        ]);
+        $filename = time() .".". $request->image->extension();
+        $request->image->move(public_path('images'),$filename);
+        PostImage::create(['image'=> $filename, 'post_id'=> $post->id]);
+        return back()->with('status','Imagen cargada con exito');
 
+    }
     /**
      * Remove the specified resource from storage.
      *
