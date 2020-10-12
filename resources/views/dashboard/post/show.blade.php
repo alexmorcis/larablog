@@ -1,18 +1,11 @@
 @extends('dashboard.master')
 @section('content')
-<div class="container">
-  @include('dashboard.partials.validation-error')
-<form action="{{ route("post.store") }}" method="POST">
- @csrf
+
     <div class="form-group">
         <label for="title">Título</label>
         <input  readonly class= "form-control" type="text" name="title" id="title"  value ={{ $post->title }}>
     </div>
-    @error('title')
-    <div class="alert alert-danger" role="alert">
-        {{ $message }}
-  </div>
-    @enderror
+
     
     <div class="form-group">
         <label for="url_clean">Url limpia</label>
@@ -24,5 +17,5 @@
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
 </form>
-</div>
+
 @endsection

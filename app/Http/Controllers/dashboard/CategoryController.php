@@ -55,7 +55,8 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        return view('dashboard.category.show',["category"=> $category]);
+    
     }
 
     /**
@@ -76,9 +77,12 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(StoreCategoryPost $request, Category $category)
     {
-        //
+        $category->update($request->validated());
+
+        return back()->with('status','Categoria editada con exito');
+
     }
 
     /**
@@ -89,6 +93,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+      
+        $category->delete();
+        return back()->with('status','Categoria eliminada con exito');
+ 
     }
 }

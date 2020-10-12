@@ -80,7 +80,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <form  id="formDelete" method="category" action="{{ route('category.destroy',0) }}" data-action="{{ route('category.destroy',0) }}">
+                        <form  id="formDelete" method="POST" action="{{ route('category.destroy',0) }}" data-action="{{ route('category.destroy',0) }}">
                             @method('DELETE')
                             @csrf
                             <button type="submit" class="btn btn-danger">Borrar</button>
@@ -107,7 +107,7 @@
                 
                 var modal = $(this)
 
-                modal.find('.modal-title').text('Vas a borrar el category: ' + id)
+                modal.find('.modal-title').text('Vas a borrar el categoría: ' + id)
             })
         }
         </script>
